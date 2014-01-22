@@ -45,7 +45,7 @@ def parse(line):
     ## ensure that we get unicode input. For regular ASCII, the conversion
     ## will occur seamlessly, but for non-ASCII strings, parse must receive
     ## a unicode string or it will error out
-    line = unicode(line)
+    line = str(line)
     ## Strip out unnecessary whitespace
     strmsg = line.strip()
     ## The method for parsing the message
@@ -63,7 +63,7 @@ def _split(text, plan):
 
     ## Recurse so that the sub plans are used in order to split the data
     ## into the approriate type as defined by the current plan.
-    data = [_split(x, plan.next()) for x in text.split(plan.separator)]
+    data = [_split(x, next(plan)) for x in text.split(plan.separator)]
     ## Return the instance of the current message part according
     ## to the plan
     return plan.container(data)
@@ -88,7 +88,7 @@ class Container(list):
         True
 
         """
-        return self.separator.join((unicode(x) for x in self))
+        return self.separator.join((str(x) for x in self))
 
 class Message(Container):
     """Representation of an HL7 message. It contains a list
@@ -113,7 +113,7 @@ class Message(Container):
 
         :rtype: :py:class:`hl7.Segment` or list of :py:class:`hl7.Segment`
         """
-        if isinstance(key, basestring):
+        if isinstance(key, str):
             return self.segments(key)
         return list.__getitem__(self, key)
 
@@ -201,7 +201,7 @@ class _ParsePlan(object):
         """
         return self.containers[0](self.separator, data)
 
-    def next(self):
+    def __next__(self):
         """Generate the next level of the plan (essentially generates
         a copy of this plan with the level of the container and the
         seperator starting at the next index.

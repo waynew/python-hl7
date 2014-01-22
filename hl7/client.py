@@ -53,7 +53,7 @@ class MLLPClient(object):
         and send the message to the server
         """
         if isinstance(message, hl7.Message):
-            message = unicode(message)
+            message = str(message)
         # wrap in MLLP message container
         data = SB + message + EB + CR
         return self.send(data)
